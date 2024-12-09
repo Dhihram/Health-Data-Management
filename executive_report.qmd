@@ -1,0 +1,160 @@
+---
+execute:
+  echo: false
+format: 
+  pdf: 
+    page-width: 1
+    papersize: a4
+    geometry:
+      - top=10mm
+      - left=10mm
+      - right=10mm
+      - bottom=10mm
+      - heightrounded
+    extra_dependencies: ["float"]
+    keep_tex: yes
+---
+
+# Executive Report
+
+```{r}
+#| warning: false
+#| message: false
+library(ruODK)
+library(DBI)
+library(RODBC)
+library(odbc)
+library(dplyr)
+library(dbplyr)
+library(RPostgres)
+library(lubridate)
+library(tidyverse)
+library(tidyr)
+library(data.table)
+library(formattable)
+library(readr)
+library(grid)
+library(ggplot2)
+library(jtools)
+library(broom)
+library(table1)
+library(kableExtra)
+library(knitr)
+library(patchwork)
+library(getPass)
+```
+
+```{r}
+#| warning: false
+#| message: false
+read_chunk('databases.R')
+read_chunk('number 1.R')
+read_chunk('number 2.R')
+read_chunk('number 3.R')
+read_chunk('number 4.R')
+read_chunk('number 5.R')
+```
+
+```{r mimic,echo=FALSE}
+
+```
+
+```{r odk,echo=FALSE}
+
+```
+
+## Patients Demographic
+
+All of the demographic variables are based on [this](https://extension.unh.edu/sites/default/files/migrated_unmanaged_files/Resource004765_Rep6784.pdf). The age category is based on [this](https://www.worldometers.info/coronavirus/coronavirus-age-sex-demographics/). The ethnicity category is based on [ONS Census 2021](https://www.ons.gov.uk/peoplepopulationandcommunity/culturalidentity/ethnicity/bulletins/ethnicgroupenglandandwales/census2021). Language is shown related to the assumption of quality of care possibly affecting [the hospital treatment](https://bjgp.org/content/72/714/4). Insurance data will be important to describe the social economy status. This variable is categorized into English and Non-English because of the lack of proportion of non-English language among patients.
+
+There are 45 patients in ODK, do not match with the MIMIC databases. The non-matching patients are kept and transformed them to 'Unknown'.
+
+```{r query,echo=FALSE}
+
+```
+
+```{r table1-2,echo=FALSE}
+
+```
+
+```{r}
+#| layout-ncol: 2
+
+#table on left
+t1kable(tab1) %>% kable_styling(font_size = 9)
+
+#table on right
+t1kable(tab2) %>% kable_styling(font_size = 9)
+```
+
+## Patient's Hospital Stays
+
+$$
+\begin{aligned}
+h(t|X) = & h_0(t|\text{calendar period}) \exp(\beta_{\text{ppi}} \text{ppi} + \beta_{\text{ppi:period}} \text{ppi:period} + \beta_{\text{gerd}} \text{gerd} + \\
+& \beta_{\text{peptic\_ulcer}} \text{peptic\_ulcer} + \beta_{\text{age}} \text{age} + \beta_{\text{age:period}} \text{age:period} + \beta_{\text{imd}} \text{imd} + \\
+& \beta_{\text{imd:period}} \text{imd\_person:period} + \beta_{\text{ethnicity}} \text{ethnicity} + \beta_{\text{bmi}} \text{bmi} + \beta_{\text{gender}} \text{gender} + \\
+& \beta_{\text{gender:period}} \text{gender:period} + \beta_{\text{period}} \text{period})
+\end{aligned}
+$$
+
+There are 8 patients with negative total stay times that excluded. The numbers are rounded 2 digits.
+
+```{r query2,echo=FALSE, warning = FALSE, message = FALSE}
+
+```
+
+```{r table3-4,echo=FALSE, warning = FALSE, message=FALSE}
+
+```
+
+```{r}
+#| layout-ncol: 2
+
+#table on left
+kbl(loa, caption = "Total Admissions Times (Days)", booktabs = T, linesep= "") %>% kable_styling(font_size = 9) %>% column_spec(1, bold = T) %>% row_spec(c(3,6,9), bold = T, color = "white", background = "#D7261E") 
+
+#table on right
+kbl(los, caption = "Total ICU Times (Days)", booktabs = T, linesep= "") %>% kable_styling(font_size = 9) %>% column_spec(1, bold = T) %>% row_spec(c(3,6,9), bold = T, color = "white", background = "#D7261E") 
+```
+
+## Patient with Cardiac Devices ICU Periods
+
+```{r query3,echo=FALSE, warning = FALSE, message = FALSE}
+
+```
+
+```{r plot,echo=FALSE, warning = FALSE, message=FALSE, fig.width=8,fig.height=2.5}
+
+```
+
+## List of Expire Patients with Cardiac Devices
+
+```{r query4,echo=FALSE, warning = FALSE, message = FALSE}
+
+```
+
+```{r table5,echo=FALSE, warning = FALSE, message=FALSE}
+
+```
+
+```{r}
+kable(table4, booktabs = T, linesep= "",
+      col.names = c("Id",
+                    "Gender (Age)",
+                    "First Careunit (Days ICU)",
+                    "ICD 9", "Short Title")) %>%
+  kable_styling(font_size = 7.5,  latex_options='hold_position') %>% row_spec(0, font_size=9) %>%  row_spec(0, align = 'c', bold = T)
+```
+
+## COVID-19 in Community
+
+At a glance, the cases and deaths declined. The difference from previous month is calculated by grouping the cases and deaths monthly. The proportion of difference is calculated from the difference from previous month divided by the previous month.
+
+```{r query5,echo=FALSE, warning = FALSE, message = FALSE}
+
+```
+
+```{r plot2,echo=FALSE, warning = FALSE, message=FALSE, fig.width=8,fig.height=3}
+
+```
