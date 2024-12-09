@@ -7,6 +7,7 @@ summary report synthesising recent patient data, survey data they provided, and 
 This repo contains:
 * `README` as the readme file </p>
 * `executive_report.qmd` contains libraries and quarto files to render the executive report. this file will use all R files for the pipelines </p>
+* `executive_report.pdf` the executive report output in pdf
 * `databases.R` contains the access to ODK and MIMIC databases. Those requires password to access both databases </p>
 * `number1.R` is Patients Demographic task including query and tables </p>
 * `number2.R` is Patient's Hospital Stays taks including query and tables </p>
